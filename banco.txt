@@ -1,0 +1,145 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema gestao_integrada
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema gestao_integrada
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `gestao_integrada` DEFAULT CHARACTER SET utf8 ;
+USE `gestao_integrada` ;
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`periodo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`periodo` (
+  `idperiodo` INT(11) NOT NULL AUTO_INCREMENT,
+  `mes` VARCHAR(45) NOT NULL,
+  `inicio` DATE NOT NULL,
+  `fim` DATE NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idperiodo`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`lancamentos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`lancamentos` (
+  `idlancamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `nrolancamento` VARCHAR(45) NOT NULL,
+  `data` DATE NOT NULL,
+  `dizimo` DECIMAL(10,2) NOT NULL,
+  `oferta` DECIMAL(10,2) NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  `idperiodo` INT(11) NOT NULL,
+  PRIMARY KEY (`idlancamento`),
+  INDEX `fk_lancamentos_periodo_idx` (`idperiodo` ASC) VISIBLE,
+  CONSTRAINT `fk_lancamentos_periodo`
+    FOREIGN KEY (`idperiodo`)
+    REFERENCES `gestao_integrada`.`periodo` (`idperiodo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`cartao`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`cartao` (
+  `idcartao` INT(11) NOT NULL AUTO_INCREMENT,
+  `idlancamento` INT(11) NOT NULL,
+  `data` DATE NOT NULL,
+  `cartao` DECIMAL(10,2) NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idcartao`),
+  INDEX `fk_pix_lancamentos1_idx` (`idlancamento` ASC) VISIBLE,
+  CONSTRAINT `fk_pix_lancamentos10`
+    FOREIGN KEY (`idlancamento`)
+    REFERENCES `gestao_integrada`.`lancamentos` (`idlancamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`congregacoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`congregacoes` (
+  `idcongregacao` INT(11) NOT NULL AUTO_INCREMENT,
+  `local` VARCHAR(45) NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idcongregacao`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`pix`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`pix` (
+  `idpix` INT(11) NOT NULL AUTO_INCREMENT,
+  `idlancamento` INT(11) NOT NULL,
+  `data` DATE NOT NULL,
+  `pix` DECIMAL(10,2) NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idpix`),
+  INDEX `fk_pix_lancamentos1_idx` (`idlancamento` ASC) VISIBLE,
+  CONSTRAINT `fk_pix_lancamentos1`
+    FOREIGN KEY (`idlancamento`)
+    REFERENCES `gestao_integrada`.`lancamentos` (`idlancamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `gestao_integrada`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gestao_integrada`.`users` (
+  `idusers` INT(11) NOT NULL AUTO_INCREMENT,
+  `idcongregacao` INT(11) NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `descricao` VARCHAR(200) NOT NULL,
+  `usuario` VARCHAR(45) NOT NULL,
+  `senha` VARCHAR(200) NOT NULL,
+  `nivel` VARCHAR(45) NOT NULL,
+  `dtcria` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` CHAR(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idusers`),
+  INDEX `fk_users_congregacoes1_idx` (`idcongregacao` ASC) VISIBLE,
+  CONSTRAINT `fk_users_congregacoes1`
+    FOREIGN KEY (`idcongregacao`)
+    REFERENCES `gestao_integrada`.`congregacoes` (`idcongregacao`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
